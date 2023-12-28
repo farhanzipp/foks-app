@@ -1,47 +1,65 @@
-const squareSize = 16;
-const noRows = 30;
-const noCols = 50;
+export const createPixelEditor = (squareSize, noRows, noCols) => {
+    const canvas = document.getElementById("pixelCanvas");
+    const ctx = canvas.getContext('2d');
+    let mouseIsPressed = false;
+    let mouseButton;
+    let mouseX;
+    let mouseY;
 
-displayGridPaper();
-
-function loop()
-{
-    // Call to displayCell at mouse coordinates, only if mouse is pressed
-    if (mouseIsPressed)
-    {
-        var color = mouseButton == LEFT ? "Black" : "White";
-        displayCell(mouseX, mouseY, color);
-    }
-}
-
-// Display the cell that contains the point (x, y)
-function displayCell(x, y, color)
-{
-    var col = floor( x / squareSize );
-    var row = floor( y / squareSize );
-
-    if (col >= noCols || row >= noRows)
-        return;
-
-    // determine the cell left upper-corner x and y coordinates
-    var cellX = col * squareSize;
-    var cellY = row * squareSize;
-
-    fill(color);
-    rect(cellX, cellY, squareSize, squareSize);
-}
-
-// Display the grid paper using a series of white rectangles
-function displayGridPaper()
-{
-    for(var row = 0; row < noRows; row++)
-    {
-        for(var col = 0; col < noCols; col++)
-        {
-            var x = col * squareSize;
-            var y = row * squareSize;
-
-            rect(x, y, squareSize, squareSize);
+    const displayGridPaper = () => {
+        for (let row = 0; row < noRows; row++) {
+            for (let col = 0; col < noCols; col++) {
+                const x = col * squareSize;
+                const y = row * squareSize;
+                rect(x, y, squareSize, squareSize);
+            }
         }
-    }
-}
+    };
+
+    const displayCell = (x, y, color) => {
+        const col = Math.floor(x / squareSize);
+        const row = Math.floor(y / squareSize);
+
+        if (col >= noCols || row >= noRows)
+            return;
+
+        const cellX = col * squareSize;
+        const cellY = row * squareSize;
+
+        fill(color);
+        rect(cellX, cellY, squareSize, squareSize);
+    };
+
+    const loop = () => {
+        if (mouseIsPressed) {
+            const color = mouseButton === 0 ? "black" : "white";
+            displayCell(mouseX, mouseY, color);
+        }
+    };
+
+    const rect = (x, y, w, h) => {
+        ctx.fillRect(x, y, w, h);
+    };
+
+    canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mouseX = e.clientX - rect.left;
+        mouseY = e.clientY - rect.top;
+    });
+
+    canvas.addEventListener('mousedown', (e) => {
+        mouseIsPressed = true;
+        mouseButton = e.button;
+    });
+
+    canvas.addEventListener('mouseup', () => {
+        mouseIsPressed = false;
+    });
+
+    return {
+        setup: () => {
+            displayGridPaper();
+            setInterval(loop, 16);
+        }
+    };
+};
