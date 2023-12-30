@@ -1,65 +1,96 @@
-export const createPixelEditor = (squareSize, noRows, noCols) => {
-    const canvas = document.getElementById("pixelCanvas");
-    const ctx = canvas.getContext('2d');
-    let mouseIsPressed = false;
-    let mouseButton;
-    let mouseX;
-    let mouseY;
+export const canvas = (p) => {
+  const pixelSize = 16;
+  const rowLength = 30;
+  const colLength = 30;
+  const canvasPx = 512;
+  let backgroundLayer, drawingLayer;
 
-    const displayGridPaper = () => {
-        for (let row = 0; row < noRows; row++) {
-            for (let col = 0; col < noCols; col++) {
-                const x = col * squareSize;
-                const y = row * squareSize;
-                rect(x, y, squareSize, squareSize);
-            }
+  p.setup = () => {
+    p.createCanvas(canvasPx, canvasPx);
+    backgroundLayer = p.createGraphics(canvasPx, canvasPx);
+    drawingLayer = p.createGraphics(canvasPx, canvasPx);
+    displayBackground(backgroundLayer);
+    displayGrid(drawingLayer);
+  };
+
+  p.draw = () => {
+    p.image(backgroundLayer, 0, 0); // Draw backgroundLayer
+    p.image(drawingLayer, 0, 0); // Draw drawingLayer
+
+    if (p.mouseIsPressed) {
+      var color = p.mouseButton === p.LEFT ? "black": "transparent";
+      displayPixel(p.mouseX, p.mouseY, color);
+    }
+  };
+
+  const displayGrid = (layer) => {
+    for (let row = 0; row < rowLength; row++) {
+      for (let col = 0; col < colLength; col++) {
+        let x = col * pixelSize;
+        let y = row * pixelSize;
+        layer.fill(255, 0);
+        layer.noStroke();
+        layer.rect(x, y, pixelSize, pixelSize);
+      }
+    }
+  };
+
+  const displayBackground = (layer) => {
+    layer.background(255);
+    layer.strokeWeight(0);
+
+    for (let i = 0; i < layer.width; i += pixelSize) {
+      for (let j = 0; j < layer.height; j += pixelSize) {
+        if ((i / pixelSize + j / pixelSize) % 2 === 0) {
+          layer.fill(200); // Gray
+        } else {
+          layer.fill(255); // White
         }
-    };
+        layer.square(i, j, pixelSize);
+      }
+    }
+  };
 
-    const displayCell = (x, y, color) => {
-        const col = Math.floor(x / squareSize);
-        const row = Math.floor(y / squareSize);
-
-        if (col >= noCols || row >= noRows)
-            return;
-
-        const cellX = col * squareSize;
-        const cellY = row * squareSize;
-
-        fill(color);
-        rect(cellX, cellY, squareSize, squareSize);
-    };
-
-    const loop = () => {
-        if (mouseIsPressed) {
-            const color = mouseButton === 0 ? "black" : "white";
-            displayCell(mouseX, mouseY, color);
+  const displayBackground2 = (layer) => {
+    layer.background(255);
+    layer.strokeWeight(0);
+  
+    for (let i = 0; i < layer.width; i += pixelSize) {
+      for (let j = 0; j < layer.height; j += pixelSize) {
+        const colIndex = Math.floor(i / pixelSize);
+        const rowIndex = Math.floor(j / pixelSize);
+        const transparentPink = p.color(255, 192, 203);
+        
+        if (colIndex % 2 === 0 || rowIndex % 2 === 0) {
+          layer.fill(transparentPink.levels[0], transparentPink.levels[1], transparentPink.levels[2], 128); // Gray
+        } else {
+          layer.fill(255); // White
         }
-    };
+  
+        layer.square(i, j, pixelSize);
+      }
+    }
+  };
+  
+  
+  
 
-    const rect = (x, y, w, h) => {
-        ctx.fillRect(x, y, w, h);
-    };
+  const displayPixel = (x, y, color) => {
+    let col = Math.floor(x / pixelSize);
+    let row = Math.floor(y / pixelSize);
+    if (col >= colLength || row >= rowLength) return;
 
-    canvas.addEventListener('mousemove', (e) => {
-        const rect = canvas.getBoundingClientRect();
-        mouseX = e.clientX - rect.left;
-        mouseY = e.clientY - rect.top;
-    });
+    // Determine the cell's left upper-corner x and y coordinates
+    var pixelX = col * pixelSize;
+    var pixelY = row * pixelSize;
 
-    canvas.addEventListener('mousedown', (e) => {
-        mouseIsPressed = true;
-        mouseButton = e.button;
-    });
-
-    canvas.addEventListener('mouseup', () => {
-        mouseIsPressed = false;
-    });
-
-    return {
-        setup: () => {
-            displayGridPaper();
-            setInterval(loop, 16);
-        }
-    };
+    drawingLayer.noStroke();
+    // Check if the color is 'transparent'
+    if (color !== 'transparent') {
+      drawingLayer.fill(color);
+      drawingLayer.rect(pixelX, pixelY, pixelSize, pixelSize);
+    } else {
+      drawingLayer.clear(pixelX, pixelY, pixelSize, pixelSize);
+    }
+  };
 };

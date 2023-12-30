@@ -1,157 +1,120 @@
-var grid = 32;
-var show = false;
+// p5-sketch.js
+export const sketch = (p) => {
+  let backgroundLayer, drawingLayer;
+  const cellSize = 20;
 
-function setup() {
-  createCanvas(512, 512);
-  background(240);
+  let isMousePressed = false;
 
-  colorPickerButton();
-  showGridButton();
-  saveButton();
-  clearButton();
-  bigGridButton();
-}
+  let clearButton, eraserButton;
 
-function draw() {
-  if (mouseIsPressed) {
-    var x = snap(mouseX);
-    var y = snap(mouseY);
-    if (show == false) {
-      noStroke();
-    } else {
-      stroke(150);
+  p.setup = () => {
+    p.createCanvas(400, 400);
+    backgroundLayer = p.createGraphics(400, 400);
+    drawingLayer = p.createGraphics(400, 400);
+
+    drawBackground(backgroundLayer);
+
+    // Create buttons
+    clearButton = createButton('Clear Drawing', 10, p.height + 100);
+    eraserButton = createButton('Eraser', 120, p.height + 100);
+  };
+
+  p.draw = () => {
+    p.background(255);
+
+    p.image(backgroundLayer, 0, 0);
+    p.image(drawingLayer, 0, 0);
+    drawCells(drawingLayer);
+    showCanvasBorder();
+  };
+
+  p.mousePressed = () => {
+    isMousePressed = true;
+    drawOnDrag();
+  };
+
+  p.mouseReleased = () => {
+    isMousePressed = false;
+  };
+
+  p.mouseDragged = () => {
+    if (isMousePressed) {
+      drawOnDrag();
     }
-    fill(colorPicker.color());
-    square(x, y, grid);
-  }
-}
+  };
 
-function createGrid() {
-  var l = 0;
-  strokeWeight(1);
-  stroke(150);
-  while (l < width || l < height) {
-    line(0, l, width, l);
-    line(l, 0, l, height);
-    l += grid;
-  }
-}
+  const showCanvasBorder = () => {
+    p.stroke(0);
+    p.strokeWeight(5);
+    p.noFill();
+    p.rect(0, 0, p.width, p.height);
+  };
 
-function removeGrid() {
-  var l = 0;
-  strokeWeight(1);
-  stroke(150, 0);
-  erase();
-  while (l < width || l < height) {
-    line(0, l, width, l);
-    line(l, 0, l, height);
-    l += grid;
-  }
-  noErase();
-}
+  const drawBackground = (layer) => {
+    layer.background(255);
+    layer.strokeWeight(0);
 
-function colorPickerButton() {
-  colorPicker = createColorPicker("#49DFFD");
-  colorPicker.position(0);
-  colorPicker.size(colorPicker.width, 28);
-}
-
-function saveButton() {
-  saveButton = createButton("DOWNLOAD PNG");
-  saveButton.position(width - 150);
-  saveButton.size(150, 32);
-  saveButton.mousePressed(download);
-}
-
-function clearButton() {
-  clearButton = createButton("CLEAR");
-  clearButton.position(button.x + button.width + 8);
-  clearButton.size(clearButton.width, 32);
-  clearButton.mousePressed(clean);
-}
-
-function showGridButton() {
-  button = createButton("SHOW GRID");
-  button.position(colorPicker.width + 8);
-  button.size(116, 32);
-  button.mousePressed(turnOnGrid);
-}
-
-function eraseGridButton() {
-  button = createButton("ERASE GRID");
-  button.position(colorPicker.width + 8);
-  button.size(116, 32);
-  button.mousePressed(turnOnGrid);
-}
-
-function gridControl() {
-  gridSizeButton.remove();
-  if (grid == 64) {
-    if (show == true) {
-      removeGrid();
-      button.remove();
-      showGridButton();
-      show = false;
+    for (let i = 0; i < layer.width; i += cellSize) {
+      for (let j = 0; j < layer.height; j += cellSize) {
+        if ((i / cellSize + j / cellSize) % 2 === 0) {
+          layer.fill(200); // Gray
+        } else {
+          layer.fill(255); // White
+        }
+        layer.square(i, j, cellSize);
+      }
     }
-    grid = 32;
-    bigGridButton();
-  } else {
-    if (show == true) {
-      removeGrid();
-      button.remove();
-      showGridButton();
-      show = false;
+  };
+
+  const drawCells = (layer) => {
+    layer.noStroke();
+
+    for (let i = 0; i < layer.width; i += cellSize) {
+      for (let j = 0; j < layer.height; j += cellSize) {
+        layer.fill(255, 0);
+        layer.square(i, j, cellSize);
+      }
     }
-    grid = 64;
-    smallGridButton();
-  }
-}
+  };
 
-function bigGridButton() {
-  gridSizeButton = createButton("8X8");
-  gridSizeButton.position(clearButton.x + clearButton.width + 8);
-  gridSizeButton.size(72, 32);
-  gridSizeButton.mousePressed(gridControl);
-}
+  const fillCell = (layer, x, y, fillColor) => {
+    const snappedX = snap(x);
+    const snappedY = snap(y);
+    layer.fill(fillColor);
+    layer.square(snappedX, snappedY, cellSize);
+  };
 
-function smallGridButton() {
-  gridSizeButton = createButton("16X16");
-  gridSizeButton.position(clearButton.x + clearButton.width + 8, height + 10);
-  gridSizeButton.size(72, 32);
-  gridSizeButton.mousePressed(gridControl);
-}
+  const drawOnDrag = () => {
+    const fillColor = (p.mouseButton === p.RIGHT) ? p.color(255, 0) : p.color(0);
+    fillCell(drawingLayer, p.mouseX, p.mouseY, fillColor);
+  };
 
-function turnOnGrid() {
-  if (show == false) {
-    createGrid();
-    button.remove();
-    eraseGridButton();
-    show = true;
-  } else {
-    removeGrid();
-    button.remove();
-    showGridButton();
-    show = false;
-  }
-}
+  const snap = (coord) => {
+    return Math.floor(coord / cellSize) * cellSize;
+  };
 
-function snap(p) {
-  // subtract offset (to center lines)
-  // divide by grid to get row/column
-  // round to snap to the closest one
-  var cell = Math.round((p - grid / 2) / grid);
-  // multiply back to grid scale
-  // add offset to center
-  return cell * grid;
-}
+  const createButton = (label, x, y) => {
+    const button = p.createButton(label);
+    button.position(x, y);
+    button.size(100, 40);
+    button.mousePressed(() => handleButtonClick(label));
+    return button;
+  };
 
-function clean() {
-  clear();
-  background(240);
-  show = false;
-  showGridButton();
-}
+  const handleButtonClick = (buttonLabel) => {
+    switch (buttonLabel) {
+      case 'Clear Drawing':
+        clearDrawing();
+        break;
+      case 'Eraser':
+        // Use transparent color for eraser
+        drawOnDrag(); // Simulate erasing the entire canvas
+        break;
+      // Add more cases for additional buttons if needed
+    }
+  };
 
-function download() {
-  saveCanvas("myPixelArt", "png");
-}
+  const clearDrawing = () => {
+    drawingLayer.clear();
+  };
+};
