@@ -13,7 +13,7 @@ export const canvas = (p) => {
   let currentTool = "pen";
   let currentBackground = "background1";
   let penSize = 1;
-  let drawBackground = true;
+  
 
   p.setup = () => {
     p.createCanvas(canvasPx, canvasPx);
@@ -37,9 +37,7 @@ export const canvas = (p) => {
   };
 
   p.draw = () => {
-    if (drawBackground) {
-      p.image(backgroundLayer, 0, 0);
-    }
+    p.image(backgroundLayer, 0, 0);
     p.image(drawingLayer, 0, 0);
 
     if (p.mouseIsPressed) {
@@ -99,7 +97,7 @@ export const canvas = (p) => {
   const showBackground = (selectedBg) => {
     let pixelSize = calculatePixelSize();
     const layer = backgroundLayer;
-    layer.strokeWeight(0);
+    layer.noStroke();
 
     if (selectedBg === "background1") {
       for (let i = 0; i < layer.width; i += pixelSize) {
@@ -108,6 +106,7 @@ export const canvas = (p) => {
             layer.fill(200);
           } else {
             layer.fill(255);
+            // layer.noFill();
           }
           layer.square(i, j, pixelSize);
         }
@@ -157,15 +156,16 @@ export const canvas = (p) => {
             layer.square(i, j, pixelSize);
           }
         }
-    } else if (selectedBg === "none") {
+    } else if (selectedBg === "grid") {
       for (let i = 0; i < layer.width; i += pixelSize) {
         for (let j = 0; j < layer.height; j += pixelSize) {
-          layer.stroke(0);
           layer.strokeWeight(1);
-          layer.noFill();
-          layer.rect(i, j, pixelSize, pixelSize);
+          layer.stroke(0);
+          layer.fill(255);
+          layer.square(i, j, pixelSize);
         }
       }
+
     }
 
   }
@@ -185,7 +185,7 @@ export const canvas = (p) => {
     selectBg.option('basic', 'background1');
     selectBg.option('+ -', 'background2');
     selectBg.option('2:1','background3');
-    selectBg.option('none','none');
+    selectBg.option('grid','grid');
 
     selectBg.selected('select bg');
     selectBg.changed(() => {
