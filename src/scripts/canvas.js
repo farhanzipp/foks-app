@@ -22,7 +22,7 @@ export const canvas = (p) => {
     backgroundLayer = p.createGraphics(canvasPx, canvasPx);
     drawingLayer = p.createGraphics(canvasPx, canvasPx);
     
-    displayGrid(drawingLayer);
+    populatePixel(drawingLayer);
     showBackground(currentBackground);
 
     createButtonWithAction("Clear", clearDrawing);
@@ -57,7 +57,7 @@ export const canvas = (p) => {
     return Math.floor(canvasPx / maxRowsCols);
   };
 
-  const displayGrid = (layer) => {
+  const populatePixel = (layer) => {
     let pixelSize = calculatePixelSize();
     for (let row = 0; row < rowLength; row++) {
       for (let col = 0; col < colLength; col++) {
@@ -83,6 +83,7 @@ export const canvas = (p) => {
     var pixelY = row * pixelSize;
   
     drawingLayer.noStroke();
+
     if (currentTool === "eraser") {
       drawingLayer.erase();
     }
@@ -198,6 +199,7 @@ export const canvas = (p) => {
 
   const clearDrawing = () => {
       drawingLayer.clear();
+      p.clear();
       displayGrid(drawingLayer);
   };
 
