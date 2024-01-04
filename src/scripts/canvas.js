@@ -1,28 +1,30 @@
+let eraserCursor;
+
+function preload() {
+  eraserCursor = loadImage('eraser.png');
+}  
+
 export const canvas = (p) => {
   let rowLength = 20;
   let colLength = 20;
-  const canvasPx = 500;
+  let canvasPx = 500;
   let backgroundLayer, drawingLayer;
-  let div;
 
   let colorPicker;
   let selectBg;
   let sliderPenSize;
 
-  let inputPixelLength = 30;
   let currentTool = "pen";
   let currentBackground = "background1";
   let penSize = 1;
-  
 
   p.setup = () => {
     p.createCanvas(canvasPx, canvasPx);
-    div = p.createDiv(`<div id="btn-container"></div>`);
-    
+    p.createDiv(`<div id="btn-container"></div>`);
     backgroundLayer = p.createGraphics(canvasPx, canvasPx);
     drawingLayer = p.createGraphics(canvasPx, canvasPx);
     
-    populatePixel(drawingLayer);
+    populatePixel();
     showBackground(currentBackground);
 
     createButtonWithAction("Clear", clearDrawing);
@@ -32,7 +34,6 @@ export const canvas = (p) => {
     createSelectBg();
     createSliderPenSize();
     createButtonWithAction("Download", downloadImg);
-    createButtonWithAction("bg clear", toggleBackground);
     // createInputPixelLength();
   };
 
@@ -49,7 +50,6 @@ export const canvas = (p) => {
       }
       displayPixel(p.mouseX, p.mouseY, pixelColor);
     }
-
   };
 
   const calculatePixelSize = () => {
@@ -57,15 +57,15 @@ export const canvas = (p) => {
     return Math.floor(canvasPx / maxRowsCols);
   };
 
-  const populatePixel = (layer) => {
+  const populatePixel = () => {
     let pixelSize = calculatePixelSize();
     for (let row = 0; row < rowLength; row++) {
       for (let col = 0; col < colLength; col++) {
         let x = col * pixelSize;
         let y = row * pixelSize;
-        layer.noFill();
-        layer.noStroke();
-        layer.rect(x, y, pixelSize, pixelSize);
+        drawingLayer.noFill();
+        drawingLayer.noStroke();
+        drawingLayer.rect(x, y, pixelSize, pixelSize);
       }
     }
   };
@@ -86,12 +86,12 @@ export const canvas = (p) => {
 
     if (currentTool === "eraser") {
       drawingLayer.erase();
+      // p.erase();
     }
-  
+
     drawingLayer.fill(pixelColor);
     drawingLayer.rect(pixelX, pixelY, pixelSize, pixelSize);
-  
-    // Disable eraser effect
+   
     drawingLayer.noErase();
   };
   
@@ -107,7 +107,6 @@ export const canvas = (p) => {
             layer.fill(200);
           } else {
             layer.fill(255);
-            // layer.noFill();
           }
           layer.square(i, j, pixelSize);
         }
@@ -144,13 +143,10 @@ export const canvas = (p) => {
             const rowIndex = Math.floor(j / pixelSize);
 
             if ((colIndex % 3 === 0 || colIndex % 3 === 1) && (rowIndex % 3 === 0 || rowIndex % 3 === 1)) {
-              // 2 blocks gray
               layer.fill(grayColor);
             } else if (colIndex % 3 === 2 && rowIndex % 3 === 2) {
-              // Intersection block white
               layer.fill(whiteColor);
             } else {
-              // 1 block white
               layer.fill(whiteColor);
             }
 
@@ -166,9 +162,7 @@ export const canvas = (p) => {
           layer.square(i, j, pixelSize);
         }
       }
-
-    }
-
+    } 
   }
 
   const createButtonWithAction = (title, buttonPressedAction) => {
@@ -182,29 +176,36 @@ export const canvas = (p) => {
     selectBg = p.createSelect();
     selectBg.parent('btn-container');
 
-    selectBg.option('bg');
-    selectBg.option('basic', 'background1');
+    selectBg.option('bg basic', 'background1');
     selectBg.option('+ -', 'background2');
-    selectBg.option('2:1','background3');
+    selectBg.option('2/1','background3');
     selectBg.option('grid','grid');
 
-    selectBg.selected('select bg');
+    selectBg.selected('bg basic');
     selectBg.changed(() => {
       currentBackground = selectBg.value();
-      if (currentBackground !== 'select bg') {
-        showBackground(currentBackground);
-      }
+      showBackground(currentBackground);
     });
   }
 
   const clearDrawing = () => {
-      drawingLayer.clear();
-      p.clear();
-      displayGrid(drawingLayer);
+    drawingLayer.clear();
+    p.clear();
+    showBackground(currentBackground);
+  };
+
+  const clearBackground = () => {
+    backgroundLayer.clear();
+    p.clear();
   };
 
   const downloadImg = () => {
-    p.saveCanvas("kufix", "png");
+    clearBackground();
+    p.image(drawingLayer, 0, 0);
+    const downloading = setTimeout(
+      p.saveCanvas("kufix", "png"),500
+    )
+    showBackground(currentBackground);
   }
 
   const setTool = (tool) => {
@@ -212,7 +213,7 @@ export const canvas = (p) => {
     if (currentTool === "pen") {
       p.cursor(p.CROSS);
     } else if (currentTool === "eraser") {
-      p.cursor(p.HAND);
+      p.cursor(eraserCursor);
     } else {
       p.cursor(p.ARROW);
     }
@@ -232,9 +233,7 @@ export const canvas = (p) => {
     });
   }
 
-  const toggleBackground = () => {
-    drawBackground = !drawBackground;
-  };
+  
 
   const createInputPixelLength = () => {
     inputPixelLength = p.createInput(20, "number");

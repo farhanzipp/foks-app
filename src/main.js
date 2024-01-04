@@ -7,8 +7,6 @@ import { canvas } from './scripts/canvas.js';
 const P5 = new p5(canvas);
 
 document.querySelector('#app').innerHTML = `
-  <div>
     <h1>Kufi Drawing Canvas</h1>
     <main></main>
-  </div>
 `
