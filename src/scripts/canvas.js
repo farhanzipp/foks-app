@@ -1,9 +1,3 @@
-let eraserCursor;
-
-function preload() {
-  eraserCursor = loadImage('eraser.png');
-}  
-
 export const canvas = (p) => {
   let rowLength = 20;
   let colLength = 20;
@@ -15,8 +9,10 @@ export const canvas = (p) => {
   let sliderPenSize;
 
   let currentTool = "pen";
-  let currentBackground = "background1";
   let penSize = 1;
+  let penTip = "hamzaN";
+  let currentBackground = "background1";
+
 
   p.setup = () => {
     p.createCanvas(canvasPx, canvasPx);
@@ -73,25 +69,65 @@ export const canvas = (p) => {
   const displayPixel = (x, y, pixelColor) => {
     let pixelSize = calculatePixelSize();
     pixelSize *= penSize;
-
     let col = Math.floor(x / pixelSize);
     let row = Math.floor(y / pixelSize);
     // if (col >= colLength || row >= rowLength) return;
-  
-    // Determine the cell's left upper-corner x and y coordinates
+    // top left coordinate
     var pixelX = col * pixelSize;
     var pixelY = row * pixelSize;
   
     drawingLayer.noStroke();
+    drawingLayer.fill(pixelColor);
 
     if (currentTool === "eraser") {
       drawingLayer.erase();
-      // p.erase();
-    }
+    } 
+    
+    // else if (currentTool === "pen" && penTip === "circle") {
+    //   let centerX = pixelX + pixelSize / 2;
+    //   let centerY = pixelY + pixelSize / 2;
+    //   drawingLayer.ellipse(centerX, centerY, pixelSize, pixelSize);
+    // } else if (currentTool === "pen" && penTip === "hamzaS") {
+    //   drawingLayer.beginShape();
+    //   drawingLayer.vertex(pixelX, pixelY);
+    //   drawingLayer.vertex(pixelX + pixelSize, pixelY);
+    //   drawingLayer.vertex(pixelX + pixelSize, pixelY + pixelSize / 3);
+    //   drawingLayer.vertex(pixelX + pixelSize / 3, pixelY + pixelSize / 3);
+    //   drawingLayer.vertex(pixelX + pixelSize / 3, pixelY + pixelSize * 2 / 3);
+    //   drawingLayer.vertex(pixelX + pixelSize, pixelY + pixelSize * 2 / 3);
+    //   drawingLayer.vertex(pixelX + pixelSize, pixelY + pixelSize);
+    //   drawingLayer.vertex(pixelX, pixelY + pixelSize);
+    //   drawingLayer.endShape(p.CLOSE);
+      
+    // } else if (currentTool === "pen" && penTip === "hamzaE") {
+    //   drawingLayer.beginShape();
+    //   drawingLayer.vertex(pixelX, pixelY);
+    //   drawingLayer.vertex(pixelX + pixelSize, pixelY);
+    //   drawingLayer.vertex(pixelX + pixelSize, pixelY + pixelSize);
 
-    drawingLayer.fill(pixelColor);
+    //   drawingLayer.vertex(pixelX + pixelSize * 2 / 3, pixelY + pixelSize);
+    //   drawingLayer.vertex(pixelX + pixelSize * 2 / 3, pixelY + pixelSize / 3);
+    //   drawingLayer.vertex(pixelX + pixelSize / 3, pixelY + pixelSize / 3);
+
+    //   drawingLayer.vertex(pixelX + pixelSize / 3, pixelY + pixelSize);
+    //   drawingLayer.vertex(pixelX, pixelY + pixelSize);
+    //   drawingLayer.endShape(p.CLOSE);
+      
+    // } else if (currentTool === "pen" && penTip === "hamzaN") {
+    //   drawingLayer.beginShape();
+    //   drawingLayer.vertex(pixelX, pixelY);
+    //   drawingLayer.vertex(pixelX + pixelSize, pixelY);
+    //   drawingLayer.vertex(pixelX + pixelSize, pixelY + pixelSize / 3);
+    //   drawingLayer.vertex(pixelX + pixelSize / 3, pixelY + pixelSize / 3);
+    //   drawingLayer.vertex(pixelX + pixelSize / 3, pixelY + pixelSize * 2 / 3);
+    //   drawingLayer.vertex(pixelX + pixelSize, pixelY + pixelSize * 2 / 3);
+    //   drawingLayer.vertex(pixelX + pixelSize, pixelY + pixelSize);
+    //   drawingLayer.vertex(pixelX, pixelY + pixelSize);
+    //   drawingLayer.endShape(p.CLOSE);
+      
+    // }
+    
     drawingLayer.rect(pixelX, pixelY, pixelSize, pixelSize);
-   
     drawingLayer.noErase();
   };
   
@@ -162,7 +198,21 @@ export const canvas = (p) => {
           layer.square(i, j, pixelSize);
         }
       }
-    } 
+    } else if (selectedBg === "dot") {
+      for (let i = 0; i < layer.width; i += pixelSize) {
+        for (let j = 0; j < layer.height; j += pixelSize) {
+          layer.fill(255); // Set the fill color to white
+          layer.square(i, j, pixelSize); // Draw a white square to represent the pixel
+    
+          layer.fill(200); // Set the fill color to light gray
+          let centerX = i + pixelSize / 2;
+          let centerY = j + pixelSize / 2;
+          let circleSize = pixelSize / 4;
+          layer.ellipse(centerX, centerY, circleSize, circleSize);
+        }
+      }
+    }
+    
   }
 
   const createButtonWithAction = (title, buttonPressedAction) => {
@@ -180,6 +230,7 @@ export const canvas = (p) => {
     selectBg.option('+ -', 'background2');
     selectBg.option('2/1','background3');
     selectBg.option('grid','grid');
+    selectBg.option('dot','dot');
 
     selectBg.selected('bg basic');
     selectBg.changed(() => {
@@ -213,7 +264,7 @@ export const canvas = (p) => {
     if (currentTool === "pen") {
       p.cursor(p.CROSS);
     } else if (currentTool === "eraser") {
-      p.cursor(eraserCursor);
+      p.cursor(p.HAND);
     } else {
       p.cursor(p.ARROW);
     }
