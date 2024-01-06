@@ -1,22 +1,25 @@
-export const canvas = (p) => {
+// const checkWidth = () => {
+//   const elemWidth = document.getElementById("main-canvas").offsetWidth;
+// }
+
+// checkWidth();
+
+export const canvas = (p, canvasWidth) => {
   let rowLength = 20;
   let colLength = 20;
-  let canvasPx = 500;
+  let canvasPx = canvasWidth;
   let backgroundLayer, drawingLayer;
-
-  let colorPicker;
-  let selectBg;
-  let sliderPenSize;
-
+  //tools
+  let colorPicker, selectBg, sliderPenSize, selectPenTip;
+  //default states
   let currentTool = "pen";
   let penSize = 1;
-  let penTip = "hamzaN";
+  let penTip = "default";
   let currentBackground = "background1";
-
 
   p.setup = () => {
     p.createCanvas(canvasPx, canvasPx);
-    p.createDiv(`<div id="btn-container"></div>`);
+    // p.createDiv(`<div id="btn-container"></div>`);
     backgroundLayer = p.createGraphics(canvasPx, canvasPx);
     drawingLayer = p.createGraphics(canvasPx, canvasPx);
     
@@ -27,11 +30,13 @@ export const canvas = (p) => {
     createButtonWithAction("Pen", () => setTool("pen"));
     createButtonWithAction("Eraser", () => setTool("eraser"));
     createColorPickers();
+    createSelectPenTip();
     createSelectBg();
     createSliderPenSize();
     createButtonWithAction("Download", downloadImg);
-    // createInputPixelLength();
   };
+
+
 
   p.draw = () => {
     p.image(backgroundLayer, 0, 0);
@@ -41,10 +46,10 @@ export const canvas = (p) => {
       let pixelColor;
       if(currentTool === "pen") {
         pixelColor = colorPicker.color();
+        displayPixel(p.mouseX, p.mouseY, pixelColor);
       } else if (currentTool === "eraser") {
-        pixelColor = p.color(255, 255, 255);
+        erasePixel(p.mouseX, p.mouseY);
       }
-      displayPixel(p.mouseX, p.mouseY, pixelColor);
     }
   };
 
@@ -78,59 +83,90 @@ export const canvas = (p) => {
   
     drawingLayer.noStroke();
     drawingLayer.fill(pixelColor);
-
-    if (currentTool === "eraser") {
-      drawingLayer.erase();
-    } 
-    
-    // else if (currentTool === "pen" && penTip === "circle") {
-    //   let centerX = pixelX + pixelSize / 2;
-    //   let centerY = pixelY + pixelSize / 2;
-    //   drawingLayer.ellipse(centerX, centerY, pixelSize, pixelSize);
-    // } else if (currentTool === "pen" && penTip === "hamzaS") {
-    //   drawingLayer.beginShape();
-    //   drawingLayer.vertex(pixelX, pixelY);
-    //   drawingLayer.vertex(pixelX + pixelSize, pixelY);
-    //   drawingLayer.vertex(pixelX + pixelSize, pixelY + pixelSize / 3);
-    //   drawingLayer.vertex(pixelX + pixelSize / 3, pixelY + pixelSize / 3);
-    //   drawingLayer.vertex(pixelX + pixelSize / 3, pixelY + pixelSize * 2 / 3);
-    //   drawingLayer.vertex(pixelX + pixelSize, pixelY + pixelSize * 2 / 3);
-    //   drawingLayer.vertex(pixelX + pixelSize, pixelY + pixelSize);
-    //   drawingLayer.vertex(pixelX, pixelY + pixelSize);
-    //   drawingLayer.endShape(p.CLOSE);
-      
-    // } else if (currentTool === "pen" && penTip === "hamzaE") {
-    //   drawingLayer.beginShape();
-    //   drawingLayer.vertex(pixelX, pixelY);
-    //   drawingLayer.vertex(pixelX + pixelSize, pixelY);
-    //   drawingLayer.vertex(pixelX + pixelSize, pixelY + pixelSize);
-
-    //   drawingLayer.vertex(pixelX + pixelSize * 2 / 3, pixelY + pixelSize);
-    //   drawingLayer.vertex(pixelX + pixelSize * 2 / 3, pixelY + pixelSize / 3);
-    //   drawingLayer.vertex(pixelX + pixelSize / 3, pixelY + pixelSize / 3);
-
-    //   drawingLayer.vertex(pixelX + pixelSize / 3, pixelY + pixelSize);
-    //   drawingLayer.vertex(pixelX, pixelY + pixelSize);
-    //   drawingLayer.endShape(p.CLOSE);
-      
-    // } else if (currentTool === "pen" && penTip === "hamzaN") {
-    //   drawingLayer.beginShape();
-    //   drawingLayer.vertex(pixelX, pixelY);
-    //   drawingLayer.vertex(pixelX + pixelSize, pixelY);
-    //   drawingLayer.vertex(pixelX + pixelSize, pixelY + pixelSize / 3);
-    //   drawingLayer.vertex(pixelX + pixelSize / 3, pixelY + pixelSize / 3);
-    //   drawingLayer.vertex(pixelX + pixelSize / 3, pixelY + pixelSize * 2 / 3);
-    //   drawingLayer.vertex(pixelX + pixelSize, pixelY + pixelSize * 2 / 3);
-    //   drawingLayer.vertex(pixelX + pixelSize, pixelY + pixelSize);
-    //   drawingLayer.vertex(pixelX, pixelY + pixelSize);
-    //   drawingLayer.endShape(p.CLOSE);
-      
-    // }
-    
-    drawingLayer.rect(pixelX, pixelY, pixelSize, pixelSize);
     drawingLayer.noErase();
+
+    if (currentTool === "pen") {
+      if (penTip === "circle") {
+        let centerX = pixelX + pixelSize / 2;
+        let centerY = pixelY + pixelSize / 2;
+        drawingLayer.ellipse(centerX, centerY, pixelSize, pixelSize);
+      } 
+      else if (penTip === "hamzaS") {
+        drawHamza(pixelX, pixelY,pixelSize,"S")
+      } 
+      else if (penTip === "hamzaE") {
+        drawHamza(pixelX, pixelY,pixelSize,"E")
+      }
+      else if (penTip === "hamzaN") {
+        drawHamza(pixelX, pixelY,pixelSize,"N")
+      }
+      else if (penTip === "hamzaW") {
+        drawHamza(pixelX, pixelY,pixelSize,"W")
+      }
+      else {
+        //rectangle is default pen tip
+        drawingLayer.rect(pixelX, pixelY, pixelSize, pixelSize);
+      }
+    }
   };
   
+  const erasePixel = (x, y) => {
+    let pixelSize = calculatePixelSize();
+    pixelSize *= penSize;
+    let col = Math.floor(x / pixelSize);
+    let row = Math.floor(y / pixelSize);
+    let pixelX = col * pixelSize;
+    let pixelY = row * pixelSize;
+  
+    drawingLayer.noStroke();
+    drawingLayer.erase();
+    drawingLayer.rect(pixelX, pixelY, pixelSize, pixelSize);
+  }
+
+  const drawHamza = (x, y, pixelSize, direction) => {
+    drawingLayer.beginShape();
+    if (direction === "S") {
+      drawingLayer.vertex(x, y);
+      drawingLayer.vertex(x + pixelSize, y);
+      drawingLayer.vertex(x + pixelSize, y + pixelSize);
+      drawingLayer.vertex(x , y + pixelSize);
+      drawingLayer.vertex(x , y + pixelSize * 2 / 3);
+      drawingLayer.vertex(x + pixelSize * 2 / 3, y + pixelSize * 2 / 3);
+      drawingLayer.vertex(x + pixelSize * 2 / 3, y + pixelSize / 3);
+      drawingLayer.vertex(x, y + pixelSize / 3);
+    } else if (direction === "E") {
+      drawingLayer.vertex(x, y);
+      drawingLayer.vertex(x + pixelSize, y);
+      drawingLayer.vertex(x + pixelSize, y + pixelSize);
+      drawingLayer.vertex(x + pixelSize * 2 / 3, y + pixelSize);
+      drawingLayer.vertex(x + pixelSize * 2 / 3, y + pixelSize / 3);
+      drawingLayer.vertex(x + pixelSize / 3, y + pixelSize / 3);
+      drawingLayer.vertex(x + pixelSize / 3, y + pixelSize);
+      drawingLayer.vertex(x, y + pixelSize);
+    } else if (direction === "N") {
+      drawingLayer.vertex(x, y);
+      drawingLayer.vertex(x + pixelSize, y);
+      drawingLayer.vertex(x + pixelSize, y + pixelSize / 3);
+      drawingLayer.vertex(x + pixelSize / 3, y + pixelSize / 3);
+      drawingLayer.vertex(x + pixelSize / 3, y + pixelSize * 2 / 3);
+      drawingLayer.vertex(x + pixelSize, y + pixelSize * 2 / 3);
+      drawingLayer.vertex(x + pixelSize, y + pixelSize);
+      drawingLayer.vertex(x, y + pixelSize);
+    } else if (direction === "W") {
+      drawingLayer.vertex(x, y);
+      drawingLayer.vertex(x + pixelSize, y);
+      drawingLayer.vertex(x + pixelSize / 3, y);
+      drawingLayer.vertex(x + pixelSize / 3, y + pixelSize * 2 / 3);
+      drawingLayer.vertex(x + pixelSize * 2 / 3 , y + pixelSize * 2 / 3);
+      drawingLayer.vertex(x + pixelSize * 2 / 3 , y );
+      drawingLayer.vertex(x + pixelSize, y );
+      drawingLayer.vertex(x + pixelSize, y + pixelSize );
+      drawingLayer.vertex(x, y + pixelSize);
+    }
+
+
+    drawingLayer.endShape(p.CLOSE);
+  }
   const showBackground = (selectedBg) => {
     let pixelSize = calculatePixelSize();
     const layer = backgroundLayer;
@@ -219,6 +255,7 @@ export const canvas = (p) => {
       let button = p.createButton(title);
       button.parent('btn-container');
       button.id(title);
+      button.addClass('tool-btn');
       button.mousePressed(buttonPressedAction);
   };
 
@@ -236,6 +273,23 @@ export const canvas = (p) => {
     selectBg.changed(() => {
       currentBackground = selectBg.value();
       showBackground(currentBackground);
+    });
+  }
+
+  const createSelectPenTip = () => {
+    selectPenTip= p.createSelect();
+    selectPenTip.parent('btn-container');
+
+    selectPenTip.option('default', 'default');
+    selectPenTip.option('circle', 'circle');
+    selectPenTip.option('hamz N','hamzaN');
+    selectPenTip.option('hamz E','hamzaE');
+    selectPenTip.option('hamz S','hamzaS');
+    selectPenTip.option('hamz W','hamzaW');
+
+    selectPenTip.selected('default');
+    selectPenTip.changed(() => {
+      penTip = selectPenTip.value();
     });
   }
 
@@ -283,16 +337,4 @@ export const canvas = (p) => {
       penSize = sliderPenSize.value();
     });
   }
-
-  
-
-  const createInputPixelLength = () => {
-    inputPixelLength = p.createInput(20, "number");
-    inputPixelLength.parent('btn-container');
-    inputPixelLength.changed(() => {
-      rowLength = inputPixelLength.value();
-      colLength = inputPixelLength.value();
-    })
-  }
-
 };

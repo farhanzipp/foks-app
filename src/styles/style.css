@@ -1,0 +1,8 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+.tool-btn {
+    padding: 2px;
+    background-color: aquamarine;
+}
