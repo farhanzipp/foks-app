@@ -1,12 +1,6 @@
-// const checkWidth = () => {
-//   const elemWidth = document.getElementById("main-canvas").offsetWidth;
-// }
-
-// checkWidth();
-
 export const canvas = (p, canvasWidth) => {
-  let rowLength = 20;
-  let colLength = 20;
+  let rowLength = 40;
+  let colLength = 40;
   let canvasPx = canvasWidth;
   let backgroundLayer, drawingLayer;
   //tools
@@ -19,7 +13,6 @@ export const canvas = (p, canvasWidth) => {
 
   p.setup = () => {
     p.createCanvas(canvasPx, canvasPx);
-    // p.createDiv(`<div id="btn-container"></div>`);
     backgroundLayer = p.createGraphics(canvasPx, canvasPx);
     drawingLayer = p.createGraphics(canvasPx, canvasPx);
     
@@ -35,8 +28,6 @@ export const canvas = (p, canvasWidth) => {
     createSliderPenSize();
     createButtonWithAction("Download", downloadImg);
   };
-
-
 
   p.draw = () => {
     p.image(backgroundLayer, 0, 0);
@@ -56,6 +47,7 @@ export const canvas = (p, canvasWidth) => {
   const calculatePixelSize = () => {
     let maxRowsCols = Math.max(rowLength, colLength);
     return Math.floor(canvasPx / maxRowsCols);
+    // return canvasPx / maxRowsCols;
   };
 
   const populatePixel = () => {
@@ -173,6 +165,7 @@ export const canvas = (p, canvasWidth) => {
     layer.noStroke();
 
     if (selectedBg === "background1") {
+      layer.clear();
       for (let i = 0; i < layer.width; i += pixelSize) {
         for (let j = 0; j < layer.height; j += pixelSize) {
           if ((i / pixelSize + j / pixelSize) % 2 === 0) {
@@ -206,6 +199,7 @@ export const canvas = (p, canvasWidth) => {
         }
       }
     } else if (selectedBg === "background3") {
+        layer.clear();
         const grayColor = layer.color(200);
         const whiteColor = layer.color(255);
 
@@ -226,6 +220,7 @@ export const canvas = (p, canvasWidth) => {
           }
         }
     } else if (selectedBg === "grid") {
+      layer.clear();
       for (let i = 0; i < layer.width; i += pixelSize) {
         for (let j = 0; j < layer.height; j += pixelSize) {
           layer.strokeWeight(1);
@@ -235,6 +230,7 @@ export const canvas = (p, canvasWidth) => {
         }
       }
     } else if (selectedBg === "dot") {
+      layer.clear();
       for (let i = 0; i < layer.width; i += pixelSize) {
         for (let j = 0; j < layer.height; j += pixelSize) {
           layer.fill(255); // Set the fill color to white
