@@ -3,6 +3,56 @@
 @import 'tailwindcss/utilities';
 
 .tool-btn {
+    width: 3rem;
+    height: 2.5rem;
     padding: 2px;
-    background-color: aquamarine;
+    border: 2px solid cornflowerblue;
+    border-radius: 5px;
 }
+
+.tool-btn:hover,
+.btn-active {
+    color: #f2f2f2;
+    background: #333;
+    border-color: #333;
+}
+
+/* custom select */
+#selectPentip {
+    display: none;
+    position: relative;
+}
+
+#selectPentip li {
+    cursor: pointer;
+    list-style: none;
+    padding: 0.5rem;
+    background-color: grey;
+}
+
+#selectPentip li:hover {
+    background-color: #333;
+}
+
+.btn-select img {
+    width: 20px;
+}
+
+#selectPentip li img {
+    width: 20px;
+}
+
+.btn-select {
+    cursor: pointer;
+    list-style: none;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 2.5rem;
+    width: 2.5rem;
+    padding: 4px;
+    border: 2px solid cornflowerblue;
+    border-radius: 5px;
+}
+

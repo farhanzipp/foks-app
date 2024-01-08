@@ -1,14 +1,14 @@
-export const canvas = (p, canvasWidth) => {
-  let rowLength = 40;
-  let colLength = 40;
-  let canvasPx = canvasWidth;
+export const sketch = (p, settings) => {
+  let rowLength = 30;
+  let colLength = 30;
+  let canvasPx = settings.canvasWidth;
   let backgroundLayer, drawingLayer;
   //tools
   let colorPicker, selectBg, sliderPenSize, selectPenTip;
   //default states
   let currentTool = "pen";
   let penSize = 1;
-  let penTip = "default";
+  let penTip = settings.penTip;
   let currentBackground = "background1";
 
   p.setup = () => {
@@ -19,9 +19,10 @@ export const canvas = (p, canvasWidth) => {
     populatePixel();
     showBackground(currentBackground);
 
-    createButtonWithAction("Clear", clearDrawing);
-    createButtonWithAction("Pen", () => setTool("pen"));
-    createButtonWithAction("Eraser", () => setTool("eraser"));
+    // createButtonWithAction("Clear", clearDrawing);
+    // createButtonWithAction("Pen", () => setTool("pen"));
+    // createButtonWithAction("Eraser", () => setTool("eraser"));
+    
     createColorPickers();
     createSelectPenTip();
     createSelectBg();
@@ -47,7 +48,6 @@ export const canvas = (p, canvasWidth) => {
   const calculatePixelSize = () => {
     let maxRowsCols = Math.max(rowLength, colLength);
     return Math.floor(canvasPx / maxRowsCols);
-    // return canvasPx / maxRowsCols;
   };
 
   const populatePixel = () => {
@@ -295,13 +295,9 @@ export const canvas = (p, canvasWidth) => {
     showBackground(currentBackground);
   };
 
-  const clearBackground = () => {
+  const downloadImg = () => {
     backgroundLayer.clear();
     p.clear();
-  };
-
-  const downloadImg = () => {
-    clearBackground();
     p.image(drawingLayer, 0, 0);
     const downloading = setTimeout(
       p.saveCanvas("kufix", "png"),500
@@ -333,4 +329,7 @@ export const canvas = (p, canvasWidth) => {
       penSize = sliderPenSize.value();
     });
   }
+
+  p.setTool = setTool;
+  p.clearDrawing = clearDrawing;
 };
