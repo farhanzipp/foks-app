@@ -1,6 +1,6 @@
-import { customSelectElement } from "./selectedWithImage";
+import { customSelectElement } from "./customSelectElement";
 
-export const toolsUi = (canvasInstance) => {
+export const configureUi = (canvasInstance) => {
     document.getElementById("pen").addEventListener("click", () => {
         if (canvasInstance.setTool) {
             canvasInstance.setTool("pen");
@@ -29,12 +29,11 @@ export const toolsUi = (canvasInstance) => {
         }
     });
 
-    // Add more listeners as needed
-    customSelectElement();
+    const handlePenTipChange = (newPenTip) => {
+        console.log('Callback: Pen Tip Changed to', newPenTip);
+        canvasInstance.setPentip(newPenTip);
+        // Perform any additional actions you need here
+    };
 
-    document.getElementById("btn-select").addEventListener("change", (event) => {
-        const newPenTip = event.target.value;
-        canvasSettings.penTip = newPenTip;
-    })
-
+    const pentipValue = customSelectElement("select-pentip", "selectPentip", handlePenTipChange);
 };

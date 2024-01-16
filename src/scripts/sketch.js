@@ -8,7 +8,7 @@ export const sketch = (p, settings) => {
   //default states
   let currentTool = "pen";
   let penSize = 1;
-  let penTip = settings.penTip;
+  let penTip = pen;
   let currentBackground = "background1";
 
   p.setup = () => {
@@ -22,9 +22,9 @@ export const sketch = (p, settings) => {
     // createButtonWithAction("Clear", clearDrawing);
     // createButtonWithAction("Pen", () => setTool("pen"));
     // createButtonWithAction("Eraser", () => setTool("eraser"));
+    // createSelectPenTip();
     
     createColorPickers();
-    createSelectPenTip();
     createSelectBg();
     createSliderPenSize();
     createButtonWithAction("Download", downloadImg);
@@ -272,23 +272,6 @@ export const sketch = (p, settings) => {
     });
   }
 
-  const createSelectPenTip = () => {
-    selectPenTip= p.createSelect();
-    selectPenTip.parent('btn-container');
-
-    selectPenTip.option('default', 'default');
-    selectPenTip.option('circle', 'circle');
-    selectPenTip.option('hamz N','hamzaN');
-    selectPenTip.option('hamz E','hamzaE');
-    selectPenTip.option('hamz S','hamzaS');
-    selectPenTip.option('hamz W','hamzaW');
-
-    selectPenTip.selected('default');
-    selectPenTip.changed(() => {
-      penTip = selectPenTip.value();
-    });
-  }
-
   const clearDrawing = () => {
     drawingLayer.clear();
     p.clear();
@@ -316,6 +299,10 @@ export const sketch = (p, settings) => {
     }
   }
 
+  const setPentip = (pentip) => {
+    penTip = pentip;
+  }
+
   const createColorPickers = () => {
     colorPicker = p.createColorPicker('#000000');
     colorPicker.parent('btn-container');
@@ -332,4 +319,5 @@ export const sketch = (p, settings) => {
 
   p.setTool = setTool;
   p.clearDrawing = clearDrawing;
+  p.setPentip = setPentip;
 };
