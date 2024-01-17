@@ -16,7 +16,7 @@ export const customSelectElement = (buttonId, listId, onChangeCallback) => {
         // change current selection on click on item
         element.onclick = () => {
             // hide selection list
-            list.style.display = 'none';
+            list.style.visibility = 'hidden';
 
             // set selected
             selectButton.setAttribute('value', element.getAttribute('value'));
@@ -34,7 +34,7 @@ export const customSelectElement = (buttonId, listId, onChangeCallback) => {
 
     // toggle list visibility on button click
     selectButton.onclick = () => {
-        list.style.display = list.style.display === 'inline' ? 'none' : 'inline';
+        list.style.visibility = list.style.visibility === 'visible' ? 'hidden' : 'visible';
     };
 
     // Return the initial selected value

@@ -4,7 +4,7 @@ export const sketch = (p, settings) => {
   let canvasPx = settings.canvasWidth;
   let backgroundLayer, drawingLayer;
   //tools
-  let colorPicker, selectBg, sliderPenSize, selectPenTip;
+  let colorPicker, selectBg, sliderPenSize;
   //default states
   let currentTool = "pen";
   let penSize = 1;
@@ -23,9 +23,9 @@ export const sketch = (p, settings) => {
     // createButtonWithAction("Pen", () => setTool("pen"));
     // createButtonWithAction("Eraser", () => setTool("eraser"));
     // createSelectPenTip();
+    // createSelectBg();
     
     createColorPickers();
-    createSelectBg();
     createSliderPenSize();
     createButtonWithAction("Download", downloadImg);
   };
@@ -159,6 +159,7 @@ export const sketch = (p, settings) => {
 
     drawingLayer.endShape(p.CLOSE);
   }
+
   const showBackground = (selectedBg) => {
     let pixelSize = calculatePixelSize();
     const layer = backgroundLayer;
@@ -303,6 +304,11 @@ export const sketch = (p, settings) => {
     penTip = pentip;
   }
 
+  const setBackground = (bg) => {
+    currentBackground = bg;
+    showBackground(currentBackground);
+  }
+
   const createColorPickers = () => {
     colorPicker = p.createColorPicker('#000000');
     colorPicker.parent('btn-container');
@@ -320,4 +326,5 @@ export const sketch = (p, settings) => {
   p.setTool = setTool;
   p.clearDrawing = clearDrawing;
   p.setPentip = setPentip;
+  p.setBackground = setBackground;
 };

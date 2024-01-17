@@ -35,5 +35,12 @@ export const configureUi = (canvasInstance) => {
         // Perform any additional actions you need here
     };
 
+    const handleBackgroundChange = (newBg) => {
+        console.log('Callback: Bg Changed to', newBg);
+        canvasInstance.setBackground(newBg);
+        // Perform any additional actions you need here
+    };
+
     const pentipValue = customSelectElement("select-pentip", "selectPentip", handlePenTipChange);
+    const backgroundValue = customSelectElement("select-background", "selectBackground", handleBackgroundChange);
 };

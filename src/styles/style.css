@@ -3,7 +3,7 @@
 @import 'tailwindcss/utilities';
 
 .tool-btn {
-    width: 3rem;
+    min-width: 3rem;
     height: 2.5rem;
     padding: 2px;
     border: 2px solid cornflowerblue;
@@ -18,28 +18,8 @@
 }
 
 /* custom select */
-#selectPentip {
-    display: none;
+.custom-select-container {
     position: relative;
-}
-
-#selectPentip li {
-    cursor: pointer;
-    list-style: none;
-    padding: 0.5rem;
-    background-color: grey;
-}
-
-#selectPentip li:hover {
-    background-color: #333;
-}
-
-.btn-select img {
-    width: 20px;
-}
-
-#selectPentip li img {
-    width: 20px;
 }
 
 .custom-select {
@@ -50,9 +30,47 @@
     justify-content: center;
     align-items: center;
     height: 2.5rem;
-    width: 2.5rem;
+    min-width: 2.5rem;
     padding: 4px;
     border: 2px solid cornflowerblue;
     border-radius: 5px;
 }
+
+.custom-select-ul {
+    visibility: hidden;
+    position: absolute;
+    top: 110%;
+    left: 2px;
+    min-width: 70px;
+    display: grid;
+    grid-template-columns: auto auto;
+}
+
+.custom-select-ul li {
+    cursor: pointer;
+    list-style: none;
+    padding: 0.5rem;
+    background-color: grey;
+}
+
+.custom-select-ul li:hover {
+    background-color: #333;
+}
+
+/* select pentip */
+#selectPentip li img {
+    width: 15px;
+}
+/* select bg */
+
+#selectBackground {
+    padding: 0px;
+    margin: 0px;
+    grid-template-columns: 50px;
+}
+
+#select-background li img {
+    width: 50px;
+}
+
 

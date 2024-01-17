@@ -18,16 +18,28 @@ document.querySelector('#app').innerHTML = `
     <button id="pen" class="tool-btn btn-active"><i class="fa-solid fa-pen"></i></button>
     <button id="eraser" class="tool-btn"><i class="fa-solid fa-eraser"></i></button>
     <button id="clear" class="tool-btn">Clr</button>
+    <div class="custom-select-container">
+        <button id="select-pentip" class="custom-select" value=""></button>
+        <ul id="selectPentip" class="custom-select-ul">
+            <li value="pen" data-thumbnail="src/assets/square.png"></li>
+            <li value="circle" data-thumbnail="src/assets/circle.png"></li>
+            <li value="hamzaN" data-thumbnail="src/assets/hamzaN.png"></li>
+            <li value="hamzaE" data-thumbnail="src/assets/hamzaE.png"></li>
+            <li value="hamzaS" data-thumbnail="src/assets/hamzaS.png"></li>
+            <li value="hamzaW" data-thumbnail="src/assets/hamzaW.png"></li>
+        </ul>
+    </div>
 
-    <button id="select-pentip" class="custom-select" value=""></button>
-    <ul id="selectPentip">
-        <li id="pentip" value="pen" data-thumbnail="src/assets/square.png"></li>
-        <li id="pentip" value="circle" data-thumbnail="src/assets/circle.png"></li>
-        <li id="pentip" value="hamzaN" data-thumbnail="src/assets/hamzaN.png"></li>
-        <li id="pentip" value="hamzaE" data-thumbnail="src/assets/hamzaE.png"></li>
-        <li id="pentip" value="hamzaS" data-thumbnail="src/assets/hamzaS.png"></li>
-        <li id="pentip" value="hamzaW" data-thumbnail="src/assets/hamzaW.png"></li>
-    </ul>
+    <div class="custom-select-container">
+        <button id="select-background" class="custom-select" value=""></button>
+        <ul id="selectBackground" class="custom-select-ul">
+            <li value="background1" data-thumbnail="src/assets/bgBasic.png"></li>
+            <li value="background2" data-thumbnail="src/assets/bgBasic.png"></li>
+            <li value="background3" data-thumbnail="src/assets/bgBasic.png"></li>
+            <li value="grid" data-thumbnail="src/assets/bgBasic.png"></li>
+            <li value="dot" data-thumbnail="src/assets/bgBasic.png"></li>
+        </ul>
+    </div>
 </div>
 `
 const checkWidth = () => {
