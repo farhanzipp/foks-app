@@ -1,33 +1,26 @@
 export const sketch = (p, settings) => {
-  let rowLength = 30;
-  let colLength = 30;
+  
+  let rowLength = 25;
+  let colLength = 25;
   let canvasPx = settings.canvasWidth;
   let backgroundLayer, drawingLayer;
   //tools
-  let colorPicker, selectBg, sliderPenSize;
+  let colorPicker;
   //default states
   let currentTool = "pen";
   let penSize = 1;
   let penTip = pen;
   let currentBackground = "background1";
+  let currentColor = "#333333";
 
   p.setup = () => {
-    p.createCanvas(canvasPx, canvasPx);
+    p.createCanvas(canvasPx,canvasPx);
+    p.pixelDensity(1);
     backgroundLayer = p.createGraphics(canvasPx, canvasPx);
     drawingLayer = p.createGraphics(canvasPx, canvasPx);
     
     populatePixel();
     showBackground(currentBackground);
-
-    // createButtonWithAction("Clear", clearDrawing);
-    // createButtonWithAction("Pen", () => setTool("pen"));
-    // createButtonWithAction("Eraser", () => setTool("eraser"));
-    // createSelectPenTip();
-    // createSelectBg();
-    
-    createColorPickers();
-    createSliderPenSize();
-    createButtonWithAction("Download", downloadImg);
   };
 
   p.draw = () => {
@@ -35,10 +28,8 @@ export const sketch = (p, settings) => {
     p.image(drawingLayer, 0, 0);
 
     if (p.mouseIsPressed) {
-      let pixelColor;
       if(currentTool === "pen") {
-        pixelColor = colorPicker.color();
-        displayPixel(p.mouseX, p.mouseY, pixelColor);
+        displayPixel(p.mouseX, p.mouseY, currentColor);
       } else if (currentTool === "eraser") {
         erasePixel(p.mouseX, p.mouseY);
       }
@@ -46,8 +37,15 @@ export const sketch = (p, settings) => {
   };
 
   const calculatePixelSize = () => {
-    let maxRowsCols = Math.max(rowLength, colLength);
-    return Math.floor(canvasPx / maxRowsCols);
+    const maxRowsCols = Math.max(rowLength, colLength);
+    const cellSize = Math.min(canvasPx / rowLength, canvasPx / colLength);
+  
+    // Ensure that the cell size is an even division of the canvas dimensions
+    if (canvasPx % cellSize !== 0 || canvasPx / cellSize !== maxRowsCols) {
+      return Math.floor(Math.min(canvasPx / rowLength, canvasPx / colLength));
+    }
+  
+    return cellSize;
   };
 
   const populatePixel = () => {
@@ -68,39 +66,37 @@ export const sketch = (p, settings) => {
     pixelSize *= penSize;
     let col = Math.floor(x / pixelSize);
     let row = Math.floor(y / pixelSize);
-    // if (col >= colLength || row >= rowLength) return;
-    // top left coordinate
+
+    if (col >= colLength || row >= rowLength) return;
+    
+    // Adjusted calculation for top left corner
     var pixelX = col * pixelSize;
     var pixelY = row * pixelSize;
-  
+
     drawingLayer.noStroke();
     drawingLayer.fill(pixelColor);
     drawingLayer.noErase();
 
     if (currentTool === "pen") {
-      if (penTip === "circle") {
-        let centerX = pixelX + pixelSize / 2;
-        let centerY = pixelY + pixelSize / 2;
-        drawingLayer.ellipse(centerX, centerY, pixelSize, pixelSize);
-      } 
-      else if (penTip === "hamzaS") {
-        drawHamza(pixelX, pixelY,pixelSize,"S")
-      } 
-      else if (penTip === "hamzaE") {
-        drawHamza(pixelX, pixelY,pixelSize,"E")
-      }
-      else if (penTip === "hamzaN") {
-        drawHamza(pixelX, pixelY,pixelSize,"N")
-      }
-      else if (penTip === "hamzaW") {
-        drawHamza(pixelX, pixelY,pixelSize,"W")
-      }
-      else {
-        //rectangle is default pen tip
-        drawingLayer.rect(pixelX, pixelY, pixelSize, pixelSize);
-      }
+        if (penTip === "circle") {
+            let centerX = pixelX + pixelSize / 2;
+            let centerY = pixelY + pixelSize / 2;
+            drawingLayer.ellipse(centerX, centerY, pixelSize, pixelSize);
+        } else if (penTip === "hamzaS") {
+            drawHamza(pixelX, pixelY, pixelSize, "S");
+        } else if (penTip === "hamzaE") {
+            drawHamza(pixelX, pixelY, pixelSize, "E");
+        } else if (penTip === "hamzaN") {
+            drawHamza(pixelX, pixelY, pixelSize, "N");
+        } else if (penTip === "hamzaW") {
+            drawHamza(pixelX, pixelY, pixelSize, "W");
+        } else {
+            // Rectangle is the default pen tip
+            drawingLayer.rect(pixelX, pixelY, pixelSize, pixelSize);
+        }
     }
   };
+
   
   const erasePixel = (x, y) => {
     let pixelSize = calculatePixelSize();
@@ -248,31 +244,6 @@ export const sketch = (p, settings) => {
     
   }
 
-  const createButtonWithAction = (title, buttonPressedAction) => {
-      let button = p.createButton(title);
-      button.parent('btn-container');
-      button.id(title);
-      button.addClass('tool-btn');
-      button.mousePressed(buttonPressedAction);
-  };
-
-  const createSelectBg = () => {
-    selectBg = p.createSelect();
-    selectBg.parent('btn-container');
-
-    selectBg.option('bg basic', 'background1');
-    selectBg.option('+ -', 'background2');
-    selectBg.option('2/1','background3');
-    selectBg.option('grid','grid');
-    selectBg.option('dot','dot');
-
-    selectBg.selected('bg basic');
-    selectBg.changed(() => {
-      currentBackground = selectBg.value();
-      showBackground(currentBackground);
-    });
-  }
-
   const clearDrawing = () => {
     drawingLayer.clear();
     p.clear();
@@ -309,22 +280,19 @@ export const sketch = (p, settings) => {
     showBackground(currentBackground);
   }
 
-  const createColorPickers = () => {
-    colorPicker = p.createColorPicker('#000000');
-    colorPicker.parent('btn-container');
+  const setPensize = (pensize) => {
+    penSize = pensize;
   }
 
-  const createSliderPenSize = () => {
-    sliderPenSize = p.createSlider(1,5,1);
-    sliderPenSize.parent('btn-container');
-    sliderPenSize.size(60);
-    sliderPenSize.changed(() => {
-      penSize = sliderPenSize.value();
-    });
+  const setColor = (color) => {
+    currentColor = color;
   }
 
   p.setTool = setTool;
   p.clearDrawing = clearDrawing;
   p.setPentip = setPentip;
   p.setBackground = setBackground;
+  p.downloadImage = downloadImg;
+  p.setPensize = setPensize;
+  p.setColor = setColor;
 };

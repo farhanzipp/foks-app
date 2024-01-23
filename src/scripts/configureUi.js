@@ -12,33 +12,51 @@ export const configureUi = (canvasInstance) => {
             document.getElementById("pen").classList.add('btn-active');
         }
     });
+
     document.getElementById("clear").addEventListener("click", () => {
         if (canvasInstance.clearDrawing) {
             canvasInstance.clearDrawing();
         }
     });
+
     document.getElementById("eraser").addEventListener("click", () => {
         if (canvasInstance.setTool) {
             canvasInstance.setTool("eraser");
-            // Remove "btn-active" class from all buttons
+
             const buttons = document.querySelectorAll('.tool-btn');
             buttons.forEach(button => button.classList.remove('btn-active'));
 
-            // Add "btn-active" class to the clicked button
             document.getElementById("eraser").classList.add('btn-active');
         }
     });
 
+    document.getElementById("download").addEventListener("click", () => {
+        if (canvasInstance.downloadImage) {
+            canvasInstance.downloadImage();
+        }
+    });
+
+    document.getElementById("select-pensize").addEventListener("change", () => {
+        const size = document.getElementById("select-pensize").value;
+        if (canvasInstance.setPensize) {
+            canvasInstance.setPensize(size);
+        }
+    });
+
+    document.getElementById("select-color").addEventListener("change", () => {
+        const color = document.getElementById("select-color").value;
+        if (canvasInstance.setColor) {
+            canvasInstance.setColor(color);
+        }
+    });
+
+    //custom select with image
     const handlePenTipChange = (newPenTip) => {
-        console.log('Callback: Pen Tip Changed to', newPenTip);
         canvasInstance.setPentip(newPenTip);
-        // Perform any additional actions you need here
     };
 
     const handleBackgroundChange = (newBg) => {
-        console.log('Callback: Bg Changed to', newBg);
         canvasInstance.setBackground(newBg);
-        // Perform any additional actions you need here
     };
 
     const pentipValue = customSelectElement("select-pentip", "selectPentip", handlePenTipChange);

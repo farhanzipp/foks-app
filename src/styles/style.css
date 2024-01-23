@@ -25,7 +25,6 @@
 .custom-select {
     cursor: pointer;
     list-style: none;
-    
     display: flex;
     justify-content: center;
     align-items: center;
@@ -39,18 +38,18 @@
 .custom-select-ul {
     visibility: hidden;
     position: absolute;
-    top: 110%;
-    left: 2px;
-    min-width: 70px;
-    display: grid;
-    grid-template-columns: auto auto;
+    bottom: 120%;
+    right: -200%;
+    display: flex;
+    gap: 5px;
+    background-color: gainsboro;
+    padding: 5px;
 }
 
 .custom-select-ul li {
     cursor: pointer;
     list-style: none;
-    padding: 0.5rem;
-    background-color: grey;
+    width: 2rem;
 }
 
 .custom-select-ul li:hover {
@@ -59,8 +58,9 @@
 
 /* select pentip */
 #selectPentip li img {
-    width: 15px;
+    width: 25px;
 }
+
 /* select bg */
 
 #selectBackground {
@@ -73,4 +73,8 @@
     width: 50px;
 }
 
+#select-color {
+    height: 45px;
+    width: 45px;
+}
 
